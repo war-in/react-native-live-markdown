@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {Button, ScrollView, StyleSheet, Text} from 'react-native';
+import {Button, ScrollView, StyleSheet, Text, View} from 'react-native';
 import {
   MarkdownTextInput,
   parseExpensiMark,
@@ -7,8 +7,26 @@ import {
 import * as TEST_CONST from './testConstants';
 import {PlatformInfo} from './PlatformInfo';
 import {handleFormatSelection} from './formatSelectionUtils';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import {NavigationContainer, type NavigationProp, useNavigation} from '@react-navigation/native';
 
-export default function App() {
+type RootStackParamList = {
+  Home: undefined;
+  Details: undefined;
+};
+
+const Stack = createNativeStackNavigator();
+
+function RootStack() {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen name="Home" component={HomeScreen} />
+      <Stack.Screen name="Details" component={DetailsScreen} />
+    </Stack.Navigator>
+  );
+}
+
+function HomeScreen() {
   const [value, setValue] = React.useState(TEST_CONST.EXAMPLE_CONTENT);
   const [multiline, setMultiline] = React.useState(true);
   const [textColorState, setTextColorState] = React.useState(false);
@@ -17,6 +35,7 @@ export default function App() {
   const [emojiFontSizeState, setEmojiFontSizeState] = React.useState(false);
   const [caretHidden, setCaretHidden] = React.useState(false);
   const [selection, setSelection] = React.useState({start: 0, end: 0});
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
   const style = React.useMemo(() => {
     return {
@@ -61,6 +80,12 @@ export default function App() {
         maxLength={30000}
       />
       <Text style={styles.text}>{JSON.stringify(value)}</Text>
+      <Button
+        title="Navigate"
+        onPress={() => {
+          navigation.navigate('Details');
+        }}
+      />
       <Button
         testID="focus"
         title="Focus"
@@ -145,6 +170,20 @@ export default function App() {
         }}
       />
     </ScrollView>
+  );
+}
+
+function DetailsScreen() {
+  return <View>
+    <Text>dupa</Text>
+  </View>;
+}
+
+export default function App() {
+  return (
+    <NavigationContainer>
+      <RootStack />
+    </NavigationContainer>
   );
 }
 
